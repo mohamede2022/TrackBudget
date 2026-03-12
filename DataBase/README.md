@@ -1,1 +1,1 @@
-This Folder has SQL Schema for Sprint 4.
+This Folder has SQL Schema.
