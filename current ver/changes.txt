@@ -1,0 +1,21 @@
+Sprint 3:
+
+- Added a placeholder TrackBudget logo to the navigation bar across all pages.
+
+- Added an 'Account Type' selection dropdown to the register.html form.
+
+- Built a dynamic badge on the dashboard to display the logged-in user's account type.
+
+- Fixed routing in app.py to point to the correct dashboard template.
+
+- Wrote the get_user_type database query and connected it to the backend to feed data to the UI.
+
+Sprint 4: Form Validation & Security
+
+- Built real-time, color-coded password and username requirement popups using vanilla JavaScript.
+
+- Implemented client-side form blocking to prevent users from submitting invalid credentials.
+
+- Added server-side regex validation in app.py as a fail-safe to enforce password security rules before database insertion.
+
+PS: app.py needs to look for "dashboard.html" not "success.html"
