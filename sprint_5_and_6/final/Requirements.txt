@@ -1,0 +1,24 @@
+Requirements
+    Web Application
+        You cannot use a CMS, like WordPress
+    Database
+        Hash user passwords
+        Examples: PostgreSQL, MySQL
+    Unit testing
+        Examples: XUnit, JUnit, Cypress, Playwright
+        Automated testing highly encouraged
+    Front-End
+        Must use 1 CSS Framework (e.g. Bootstrap, Tailwind)
+        Must use any Framework/Library (e.g. React, Blazor)
+    User Experience
+        Usable by anyone, regardless of knowledge
+        Text must be readable and properly aligned
+        Pay attention to negative space
+    Application Must Include
+        Login & Register Page
+        Home Page/Dashboard
+        User Profile and Settings
+        At least 2 additional pages
+    Stretch Goals
+        Session for remembering user if they close their browser and then log in again
+        Self-hosted authentication with options for password reset
