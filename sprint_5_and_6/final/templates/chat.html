@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>TrackBudget - Ask Koin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    
+    <style>
+        body { background-color: #f4f7f6; font-family: 'Inter', sans-serif; }
+        .bg-brand { background-color: #006747; color: white; }
+        .btn-brand { background-color: #006747; color: white; }
+        .chat-container { height: 50vh; overflow-y: auto; background: white; border-radius: 8px; padding: 20px; border: 1px solid #e0e0e0; }
+        .koin-msg { background-color: #e9ecef; padding: 10px 15px; border-radius: 15px; display: inline-block; max-width: 80%; }
+        .user-msg { background-color: #006747; color: white; padding: 10px 15px; border-radius: 15px; display: inline-block; max-width: 80%; text-align: right; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-brand mb-4">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a class="navbar-brand fw-bold fs-4" href="/dashboard">← Back to Dashboard</a>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 75%;">
+        <div class="card p-4 shadow-sm border-0">
+            <h4 class="fw-bold mb-3" style="color: #006747;">🤖 Chat with Koin</h4>
+            
+            <div id="chatBox" class="chat-container mb-3 d-flex flex-column gap-3">
+                <div class="align-self-start">
+                    <span class="koin-msg">Hi! I'm Koin, your TrackBudget AI assistant. How can I help you analyze your finances today?</span>
+                </div>
+
+                {% if chat_history %}
+                    {% for msg in chat_history %}
+                        <div class="align-self-end">
+                            <span class="user-msg">{{ msg.user_query }}</span>
+                        </div>
+                        <div class="align-self-start">
+                            <span class="koin-msg">{{ msg.ai_response }}</span>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+
+            <div id="vue-app">
+                <div class="d-flex justify-content-end mb-2">
+                    <button @click="showUpload = !showUpload" class="btn btn-sm btn-outline-secondary fw-medium">
+                        [[ showUpload ? 'Cancel Upload' : '📎 Upload Statement' ]]
+                    </button>
+                </div>
+
+                <div v-if="showUpload" class="mb-3 p-3 rounded" style="background-color: #f8f9fa; border: 1px dashed #006747;">
+                    <label class="form-label fw-bold text-muted small mb-1">Analyze a Financial Statement</label>
+                    <form id="uploadForm" action="/upload_statement" method="POST" enctype="multipart/form-data" class="d-flex gap-2">
+                        <input type="file" class="form-control form-control-sm" name="statement_file" accept=".pdf, .csv" required>
+                        <button type="submit" id="uploadBtn" class="btn btn-sm btn-outline-success fw-medium">Upload</button>
+                    </form>
+                    <div class="form-text" style="font-size: 0.75rem;">Upload a CSV or PDF for Koin to review.</div>
+                </div>
+            </div>
+            <form action="/send_message" method="POST" class="d-flex gap-2 mt-2">
+                <input type="text" class="form-control" name="user_query" placeholder="Ask about your spending..." required autocomplete="off">
+                <button type="submit" class="btn btn-brand px-4 fw-medium">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Vue.js Initialization
+        const { createApp } = Vue
+
+        createApp({
+            compilerOptions: {
+                delimiters: ['[[', ']]'] // Prevents Jinja2 template errors
+            },
+            data() {
+                return {
+                    showUpload: false // Keep the upload box hidden by default
+                }
+            }
+        }).mount('#vue-app')
+
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Auto-scroll to the bottom of the chat on load
+            const chatContainer = document.getElementById('chatBox');
+            if (chatContainer) {
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }
+
+            // Listen for the file upload form submission (using event delegation because Vue handles the DOM)
+            document.body.addEventListener('submit', function(e) {
+                if (e.target && e.target.id === 'uploadForm') {
+                    
+                    // 1. Change the button text and disable it to prevent double-clicks
+                    const submitBtn = document.getElementById('uploadBtn');
+                    submitBtn.innerHTML = 'Uploading...';
+                    submitBtn.disabled = true;
+
+                    // 2. Create a new "loading" chat message from Koin
+                    const loadingMessage = document.createElement('div');
+                    loadingMessage.className = 'align-self-start mt-2';
+
+                    // Using Bootstrap's spinner class for a cool loading animation
+                    loadingMessage.innerHTML = `
+                        <span class="koin-msg" style="background-color: #d1e7dd; border: 1px solid #0f5132;">
+                            <span class="spinner-border spinner-border-sm text-success me-2" role="status" aria-hidden="true"></span>
+                            <em>I am reading your statement. This usually takes about a minute, please wait... ⏳</em>
+                        </span>
+                    `;
+
+                    // 3. Append the message to the chat and scroll down
+                    chatContainer.appendChild(loadingMessage);
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
